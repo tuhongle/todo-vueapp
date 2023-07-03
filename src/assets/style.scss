@@ -1,1 +1,100 @@
-@import 'bootstrap/scss/bootstrap.scss';
+/* Functions must to be declared before variables */
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+
+$primary: #5e72e4;
+$success: #2dce89;
+$tertiary: #fb6340;
+
+$theme-colors: map-merge($theme-colors, (
+    'primary': $primary,
+    'success': $success,
+    'tertiary': $tertiary,
+    ));
+    
+@import '~bootstrap/scss/bootstrap';
+$bootstrap-icons-font-dir: "bootstrap-icons/font/fonts";
+@import "bootstrap-icons/font/bootstrap-icons.scss";
+
+body {
+    background-color: aquamarine;
+
+    #app {
+        font-family: Avenir, Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-align: center;
+        color: #2c3e50;
+        margin: 60px 30px 0;
+
+        @media screen and (max-width: 768px) {
+            margin: 60px 5px 0;
+        }
+
+        .todo {
+            div.tasks {
+                .col-4 {
+                    p {
+                        width: 50%;
+                        @media screen and (max-width: 768px) {
+                            width: 100%;
+                            text-align: center !important;
+                        }
+                        span {
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                        }
+                    }
+                }
+            }
+
+            div.input {
+                position: relative;
+                input {
+                    letter-spacing: 0.5px;
+                    &::placeholder {
+                        opacity: 0.5;
+                    }
+                }
+                i.bi {
+                    &:hover {
+                        cursor: pointer;
+                        color: $primary;
+                    }
+                    &::before {
+                        position: absolute;
+                        right: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                    }
+                }
+            }
+            div.lists {
+                &:hover {
+                    cursor: pointer;
+                    background: $gray-300;
+                }
+                
+                i.bi-tag-fill {
+                    width: 35px;
+                    height: 35px;
+                    border-radius: 50%;
+                    position: relative;
+                    transition: all 0.2s linear;
+
+                    &::before {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                    }
+
+                    &:hover {
+                        color: white !important;
+                        background-color: $info !important;
+                    }
+                }
+            }
+        }
+    }
+}
