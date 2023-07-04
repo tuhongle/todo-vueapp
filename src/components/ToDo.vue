@@ -23,11 +23,11 @@
         <i class="bi bi-arrow-right-short fs-1"></i>
       </div>
       <div class="row lists mb-3 py-3" v-for="todo in todolist" :key="todo.id">
-        <div class="row list" data-bs-toggle="modal" :data-bs-target="'#list'+todo.id">
-          <div class="col-9">
+        <div class="row list">
+          <div class="col-9" data-bs-toggle="modal" :data-bs-target="'#list_'+todo.id">
             <div class="row text-start">
               <div class="col-12 col-md-8 d-flex align-items-center mb-3 mb-md-0">
-                <i class="bi bi-grip-vertical"></i>
+                <i class="bi bi-grip-vertical fs-4"></i>
                 <p class="lead text-secondary mb-0 ms-2"> {{ todo.msg_task }}</p>
               </div>
               <div class="col-12 col-md-4 d-flex align-items-center">
@@ -52,28 +52,8 @@
           </div>
         </div>
         <!-- Modal -->
-        <div class="modal fade" :id="'list'+todo.id" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5">Task Detail {{ todo.id }}</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <div class="modal-input d-flex align-items-center">
-                  <input type="text" v-model="todo.msg_task" :ref='"list_" + todo.id' class="w-100 border-0 border-info py-2 ps-2 text-secondary">
-                  <i v-if="show" class="bi bi-pencil-square ms-3" @click="showInput($event, todo.id)"></i>
-                </div>
-                <div class="modal-desc">
-                  <textarea v-model="todo.desc" cols="30" rows="3" class="form-control"></textarea>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary text-white">Save changes</button>
-              </div>
-            </div>
-          </div>
+        <div class="modal fade" :id="'list_'+todo.id" tabindex="-1" aria-hidden="true">
+          <Modal :todo="todo"/>
         </div>
       </div>
       <!-- CLEAR ALL -->
@@ -88,9 +68,11 @@
 </template>
 
 <script>
+import Modal from './Modal.vue'
 
 export default {
   name: 'ToDo',
+  components: {Modal},
   data() {
     return {
       total: null,
@@ -98,20 +80,14 @@ export default {
       pending: null,
       currentDay: null,
       currentID : 4,
-      show: true,
       todolist: [
-        {id: 1, msg_task: "Standup meeting with the team @5pm", priority: "Low", tags: [], desc: "", date: "Jul 03"},
-        {id: 2, msg_task: "Order pizza for Granny tonight", priority: "High", tags: [], desc: "", date: "Jul 03"},
-        {id: 3, msg_task: "Design, Develop and Deploy Apps to Netlify for Clients", priority: "Medium", tags: [], desc: "", date: "Jul 03"},
+        {id: 1, msg_task: "Standup meeting with the team @5pm", priority: "Low", tags: ['Personal'], desc: "", date: "Jul 03"},
+        {id: 2, msg_task: "Order pizza for Granny tonight", priority: "High", tags: ['Home', 'Personal'], desc: "", date: "Jul 03"},
+        {id: 3, msg_task: "Design, Develop and Deploy Apps to Netlify for Clients", priority: "Medium", tags: ['Home'], desc: "", date: "Jul 03"},
       ]
     }
   },
-  methods: {
-    showInput(el, id) {
-      this.$refs["list_" + id][0].focus();
-      el.target.style.display = 'none';
-    }
-  },
+  methods: {},
   mounted() {
     this.total = this.todolist.length;
   },
