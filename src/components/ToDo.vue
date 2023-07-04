@@ -1,4 +1,4 @@
-<template>
+sssssssss<template>
   <section class="todolist p-5 bg-white rounded rounded-3">
     <div class="container-md todo">
       <div class="row align-items-center mb-4">
@@ -19,8 +19,10 @@
         </div>
       </div>
       <div class="row input mb-4 border-bottom border-1 border-info align-items-center">
-        <input type="text" placeholder="Enter New To-Do" class="form-control w-100 border-0 shadow-none">
-        <i class="bi bi-arrow-right-short fs-1"></i>
+        <!-- Enter new todo -->
+        <input type="text" placeholder="Enter New To-Do" class="form-control w-100 border-0 shadow-none" v-model="currentToDo" @keydown="enterToDo($event)">
+        <i class="bi bi-arrow-right-short fs-1" @click="clickEnterToDo"></i>
+        <!-- ---- Exit new todo ---- -->
       </div>
       <div class="row lists mb-3 py-3" v-for="todo in todolist" :key="todo.id">
         <div class="row list">
@@ -39,12 +41,20 @@
                   <i class="bi bi-circle-fill text-info small"></i>
                   <p class="ms-2 mb-0 text-secondary">None Priority</p>
                 </div>
-                <i class="bi bi-tag-fill fs-5 ms-auto text-secondary"></i>
+                <div class="dropdown ms-auto" @click.prevent>
+                  <i class="bi bi-tag-fill fs-5 text-secondary" data-bs-toggle="dropdown" aria-expanded="false" @click="(el) => {el.stopPropagation(); el.preventDefault()}"></i>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-item text-center">
+                      <i class="bi bi-tags-fill"></i>
+                      <span class="ms-2">Tags</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-3 d-flex align-items-center">
-            <div class="date text-secondary">{{ currentDay }}</div>
+            <div class="date text-secondary">{{ todo.date }}</div>
             <div class="icons d-flex align-items-center ms-auto">
               <input type="checkbox" class="form-check-input mt-0 me-3 border-info">
               <i class="bi bi-trash text-info fs-5"></i>
@@ -79,7 +89,8 @@ export default {
       success: null,
       pending: null,
       currentDay: null,
-      currentID : 4,
+      currentID : null,
+      currentToDo: '',
       todolist: [
         {id: 1, msg_task: "Standup meeting with the team @5pm", priority: "Low", tags: ['Personal'], desc: "", date: "Jul 03"},
         {id: 2, msg_task: "Order pizza for Granny tonight", priority: "High", tags: ['Home', 'Personal'], desc: "", date: "Jul 03"},
@@ -87,13 +98,26 @@ export default {
       ]
     }
   },
-  methods: {},
+  methods: {
+    enterToDo(el) {
+      if (el.key === "Enter") {
+        this.todolist.push({id: this.currentID, msg_task: this.currentToDo, priority: '', tags: [], desc: '', date: this.currentDay});
+        this.currentToDo = '';
+      }
+    },
+    clickEnterToDo() {
+      this.todolist.push({id: this.currentID, msg_task: this.currentToDo, priority: '', tags: [], desc: '', date: this.currentDay});
+      this.currentToDo = '';
+    }
+  },
   mounted() {
     this.total = this.todolist.length;
+    this.currentID = this.total + 1;
   },
   updated() {
     this.currentDay = new Date().toDateString().slice(4,10);
     this.total = this.todolist.length;
+    this.currentID = this.total + 1;
   }
 }
 </script>
