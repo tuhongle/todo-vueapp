@@ -41,13 +41,15 @@ sssssssss<template>
                   <i class="bi bi-circle-fill text-info small"></i>
                   <p class="ms-2 mb-0 text-secondary">None Priority</p>
                 </div>
-                <div class="dropdown ms-auto" @click.prevent>
-                  <i class="bi bi-tag-fill fs-5 text-secondary" data-bs-toggle="dropdown" aria-expanded="false" @click="(el) => {el.stopPropagation(); el.preventDefault()}"></i>
-                  <ul class="dropdown-menu">
-                    <li class="dropdown-item text-center">
+                <div class="dropdown ms-auto" @mouseenter="showdropdownMenu(todo.id)" @mouseleave="hidedropdownMenu(todo.id)">
+                  <i class="bi bi-tag-fill fs-5 text-secondary"></i>
+                  <ul class="dropdown-menu" :id="'dropdownTags_' + todo.id">
+                    <li class="dropdown-item text-center text-secondary">
                       <i class="bi bi-tags-fill"></i>
                       <span class="ms-2">Tags</span>
                     </li>
+                    <li class="dropdown-item py-0"><hr class="my-1"></li>
+                    <li class="dropdown-item text-center" v-for="tag in todo.tags" :key="tag">{{ tag }}</li>
                   </ul>
                 </div>
               </div>
@@ -56,14 +58,19 @@ sssssssss<template>
           <div class="col-3 d-flex align-items-center">
             <div class="date text-secondary">{{ todo.date }}</div>
             <div class="icons d-flex align-items-center ms-auto">
+              <!-- done todo -->
               <input type="checkbox" class="form-check-input mt-0 me-3 border-info">
-              <i class="bi bi-trash text-info fs-5"></i>
+              <!-- ======= -->
+              <!-- delete todo -->
+              <i class="bi bi-trash text-info fs-5" @click="todolist = todolist.filter((e) => e !== todo)"></i>
+              <!-- ======= -->
             </div>
           </div>
         </div>
+
         <!-- Modal -->
         <div class="modal fade" :id="'list_'+todo.id" tabindex="-1" aria-hidden="true">
-          <Modal :todo="todo"/>
+          <Modal :todo="todo" @select="handleSelect"/>
         </div>
       </div>
       <!-- CLEAR ALL -->
@@ -108,11 +115,25 @@ export default {
     clickEnterToDo() {
       this.todolist.push({id: this.currentID, msg_task: this.currentToDo, priority: '', tags: [], desc: '', date: this.currentDay});
       this.currentToDo = '';
+    },
+    showdropdownMenu(id) {
+      // this.$refs["dropdownTags_"+ id].classList;
+      document.getElementById(`dropdownTags_${id}`).classList.add('show');
+    },
+    hidedropdownMenu(id) {
+      document.getElementById(`dropdownTags_${id}`).classList.remove('show');
+    },
+    handleSelect(info) {
+      if (!this.todolist[info[1]-1].tags.includes(info[0].title)) {
+        this.todolist[info[1] - 1].tags.push(info[0].title);
+      };
     }
   },
   mounted() {
     this.total = this.todolist.length;
     this.currentID = this.total + 1;
+    this.success = 0;
+    this.pending = this.total - this.success;
   },
   updated() {
     this.currentDay = new Date().toDateString().slice(4,10);

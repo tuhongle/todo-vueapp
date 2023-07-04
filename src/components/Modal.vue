@@ -80,7 +80,7 @@
                                     <div class="form-check text-start d-flex align-items-baseline ps-2" v-for="tag in tags" :key="tag">
                                         <label class="form-check-label d-flex align-items-center mb-0">
                                             <div class="dropdown">
-                                                <i class="bi bi-three-dots-vertical me-2" type="button" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                                <i class="bi bi-three-dots-vertical me-2" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"></i>
                                                 <ul class="dropdown-menu border-0 shadow p-2">
                                                     <li class="dropdown-item d-inline-flex align-items-center justify-content-center p-1" v-for="color in colorList" :key="color">
                                                         <input type="radio" :value="color" v-model="tag.color" class="position-absolute opacity-0">
@@ -91,7 +91,7 @@
                                             <i class="bi bi-tags-fill" :class="'text-' + tag.color"></i>
                                             <span class="ms-2">{{ tag.title }}</span>
                                         </label>
-                                        <input type="checkbox" class="form-check-input ms-auto" :value="tag.title" v-model="todo.tag">
+                                        <input type="checkbox" class="form-check-input ms-auto" :value="tag.title" v-model="todo.tags" @click="$emit('select', [tag, todo.id])">
                                     </div>
                                 </div>
                             </div>

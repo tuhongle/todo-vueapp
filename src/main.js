@@ -1,7 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import './assets/style.scss'
-import 'bootstrap/dist/js/bootstrap.js'
+
+import 'bootstrap'
 import '@popperjs/core'
+import { Dropdown } from 'bootstrap'
+window.Dropdown = Dropdown
 
 createApp(App).mount('#app')
