@@ -3,7 +3,7 @@
             <div class="modal-content">
               <div class="modal-header p-3">
                 <h1 class="modal-title fs-5">Task Detail {{ todo.id }}</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData"></button>
               </div>
               <div class="modal-body p-3">
                 <div class="modal-input d-flex align-items-center mb-3">
@@ -91,7 +91,7 @@
                                             <i class="bi bi-tags-fill" :class="'text-' + tag.color"></i>
                                             <span class="ms-2">{{ tag.title }}</span>
                                         </label>
-                                        <input type="checkbox" class="form-check-input ms-auto" :value="tag.title" v-model="todo.tags" @click="$emit('select', [tag, todo.id])">
+                                        <input type="checkbox" class="form-check-input ms-auto" :value="tag.title" v-model="todo.tags" @click="$emit('select', [tag, todo.id]); $emit('color', [tag, todo.id])">
                                     </div>
                                 </div>
                             </div>
@@ -100,8 +100,8 @@
                 </div>
               </div>
               <div class="modal-footer p-3">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary text-white" data-bs-dismiss="modal">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="resetData">Close</button>
+                <button type="button" class="btn btn-primary text-white" data-bs-dismiss="modal" @click="resetData">Save changes</button>
               </div>
             </div>
           </div>
@@ -110,17 +110,15 @@
 <script>
 export default {
     name: 'Modal',
-    props: ['todo'],
+    props: ['todo', 'colorList'],
     data() {
         return {
+            currentTag: '',
+            tags: [],
             showInputField: true,
             showDescField: false,
             showPriorityField: false,
             showTagField: false,
-            showDropdown: false,
-            currentTag: '',
-            colorList: ['color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'color7', 'color8', 'color9', 'color10', 'color11', 'color12', 'color13', 'color14', 'color15', 'color16', 'color17', 'color18', 'color19'],
-            tags: [],
         }
     },
     methods: {
@@ -128,28 +126,23 @@ export default {
             this.$refs["list_" + id].focus();
             el.target.style.display = 'none';
         },
-        showPriority(el) {
-            el.target.style.background = "#5e72e4";
-            el.target.style.color = "white";
-            this.showPriorityField = true;
-            this.showTagField = false;
-        },
         enterTag(el) {
             if (el.key === 'Enter') {
                 this.tags.push({title: this.currentTag, color: ''});
                 this.currentTag = '';
             }
+        },
+        resetData() {
+            this.showInputField = true;
+            this.showDescField = false;
+            this.showPriorityField = false;
+            this.showTagField = false;
         }
     },
     created() {
         this.tags.push({title: 'Home', color: this.colorList[3]});
         this.tags.push({title: 'Personal', color: this.colorList[8]});
         this.tags.push({title: 'Work', color: this.colorList[5]});
-    },
-    mounted() {
-        this.showInputField = true;
-        this.showDescField = false;
-        this.showPriorityField = false;
     },
 }
 </script>
