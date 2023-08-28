@@ -4,17 +4,27 @@
       <div class="row mb-4">
         <div class="col d-flex align-items-center">
           <h1 class="fw-bold w-auto mb-0">TODO-LIST</h1>
+<<<<<<< HEAD
           <div>
             <RouterLink :to="{name: 'login'}">Log In</RouterLink>
             <RouterLink :to="{name: 'signup'}">Sign Up</RouterLink>
           </div>
           <div class="avatar w-auto ms-auto">
             <img src="../assets/avatar.jpg" alt="avatar" width="60" height="60" class="object-fit-cover rounded-circle">
+=======
+          <div class="col text-end">
+            <RouterLink :to="{name: 'login'}" class="me-3 text-decoration-none text-muted">Log In</RouterLink>
+            <RouterLink :to="{name: 'signup'}" class="text-decoration-none text-muted">Sign Up</RouterLink>
+          </div>
+          <div class="col avatar text-end">
+            <img src="/avatar.jpg" alt="avatar" width="60" height="60" class="object-fit-cover rounded-circle">
+>>>>>>> eb8653f7711421f871cb9b3f3ccf0fd7d55e5efb
           </div>
         </div>
       </div>
       <div class="row tasks mb-4">
         <div class="col px-1">
+<<<<<<< HEAD
           <p class="text-start fw-bold small bg-primary py-1 px-2 text-white rounded rounded-3">TOTAL: <span class="ms-0 ms-md-2">{{ total }}</span></p>
         </div>
         <div class="col px-1">
@@ -22,15 +32,32 @@
         </div>
         <div class="col px-1">
           <p class="text-start fw-bold small bg-tertiary py-1 px-2 text-white rounded rounded-3">PENDING: <span class="ms-0 ms-md-2">{{ pending }}</span></p>
+=======
+          <p class="text-start fw-bold small bg-primary py-1 px-2 text-white rounded rounded-3 py-3">TOTAL: <span class="ms-0 ms-md-2">{{ todoStore.total }}</span></p>
+        </div>
+        <div class="col px-1">
+          <p class="text-start fw-bold small bg-success py-1 px-2 text-white rounded rounded-3 py-3">SUCCESS: <span class="ms-0 ms-md-2">{{ todoStore.success }}</span></p>
+        </div>
+        <div class="col px-1">
+          <p class="text-start fw-bold small bg-tertiary py-1 px-2 text-white rounded rounded-3 py-3">PENDING: <span class="ms-0 ms-md-2">{{ todoStore.pending }}</span></p>
+>>>>>>> eb8653f7711421f871cb9b3f3ccf0fd7d55e5efb
         </div>
       </div>
       <div class="row input mb-4 border-bottom border-1 border-info align-items-center">
         <!-- Enter new todo -->
+<<<<<<< HEAD
         <input type="text" placeholder="Enter New To-Do" class="form-control w-100 border-0 shadow-none" v-model="currentToDo" @keydown="enterToDo($event)">
         <i class="bi bi-arrow-right-short fs-1" @click="clickEnterToDo"></i>
         <!-- ---- Exit new todo ---- -->
       </div>
       <div class="row lists mb-3 py-3" v-for="todo in todolist" :key="todo.id" :id="'todo_'+todo.id">
+=======
+        <input type="text" placeholder="Enter New To-Do" class="form-control w-100 border-0 shadow-none" v-model="todoStore.currentToDo" @keydown="todoStore.enterToDo($event)">
+        <i class="bi bi-arrow-right-short fs-1" @click="todoStore.clickEnterToDo"></i>
+        <!-- ---- Exit new todo ---- -->
+      </div>
+      <div class="row lists mb-3 py-3" v-for="todo in todoStore.todolist" :key="todo.id" :id="'todo_'+todo.id">
+>>>>>>> eb8653f7711421f871cb9b3f3ccf0fd7d55e5efb
         <div class="row list">
           <div class="col-9" data-bs-toggle="modal" :data-bs-target="'#list_'+todo.id">
             <div class="row text-start">
@@ -68,7 +95,11 @@
               <input type="checkbox" class="form-check-input mt-0 me-3 border-info" v-model="todo.isChecked" @click="doneToDo([todo.id, todo.isChecked])">
               <!-- ======= -->
               <!-- delete todo -->
+<<<<<<< HEAD
               <button class="btn" @click="todolist = todolist.filter((el) => el !== todo)">
+=======
+              <button class="btn" @click="todoStore.deleteTodo(todo.id)">
+>>>>>>> eb8653f7711421f871cb9b3f3ccf0fd7d55e5efb
                 <i class="bi bi-trash text-info fs-5 d-flex align-items-center"></i>
               </button>
               <!-- ======= -->
@@ -85,7 +116,11 @@
       </div>
       <!-- CLEAR ALL -->
       <div class="row clear">
+<<<<<<< HEAD
         <button v-if="todolist.length" class="w-auto btn bg-transparent text-info border-0 text-start d-flex align-items-center" @click="todolist=[]">
+=======
+        <button v-if="todoStore.todolist.length" class="w-auto btn bg-transparent text-info border-0 text-start d-flex align-items-center">
+>>>>>>> eb8653f7711421f871cb9b3f3ccf0fd7d55e5efb
           <span>Clear All</span>
           <i class="bi bi-trash fs-5 ms-3"></i>
         </button>
@@ -94,7 +129,11 @@
   </section>
 </template>
 
+<<<<<<< HEAD
 <script setup lang="ts">
+=======
+<!-- <script setup lang="ts">
+>>>>>>> eb8653f7711421f871cb9b3f3ccf0fd7d55e5efb
 import { ref, onUpdated } from 'vue'
 
 import Modal from '../components/Modal.vue'
@@ -172,3 +211,13 @@ onUpdated(() => {
 })
 
 </script>
+<<<<<<< HEAD
+=======
+ -->
+<script setup lang="ts">
+import { useTodoStore } from '../stores/todoStore'
+import Modal from '../components/Modal.vue';
+
+const todoStore = useTodoStore();
+</script>
+>>>>>>> eb8653f7711421f871cb9b3f3ccf0fd7d55e5efb

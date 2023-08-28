@@ -6,15 +6,15 @@ const todoStore = useTodoStore();
 
 <template>
     <div class="container-fluid">
-        <div class="row">
-            <div class="col text-start bg-white shadow-sm p-4">
-                <div class="card shadow px-5 py-3">
+        <div class="row align-items-center">
+            <div class="col col-md-8 col-lg-6 text-start p-4 mx-auto">
+                <div class="card shadow p-4 p-md-5 rounded-4 overflow-hidden">
                     <div class="greetings-wrapper d-flex justify-content-between align-items-center mb-4">
                         <div class="brand-logo d-flex align-items-center">
-                            <img src="/shortenURL.png" alt="" class="img-fluid" width="120">
+                            <img src="/todo.png" alt="" class="img-fluid" width="100">
                         </div>
-                        <div class="greetings me-4">
-                            <p class="fs-6 mb-3">New here?</p>
+                        <div class="greetings ms-3">
+                            <p class="fs-4 fw-bold mb-1">New here?</p>
                             <p class="mb-0">Signing up is easy. It only takes a few steps</p>
                         </div>
                     </div>
@@ -38,8 +38,8 @@ const todoStore = useTodoStore();
                                 </div>
                             </div>
                             <p class="text-danger" v-if="todoStore.signUpMsg">{{ todoStore.signUpMsg }}</p>
-                            <button class="btn btn-primary btn-block px-5 py-2 mb-4" type="submit">SIGN UP</button>
-                            <p class="text-center lead">
+                            <button class="btn btn-primary btn-block px-4 py-2 fs-4 text-light" type="submit">SIGN UP</button>
+                            <p class="text-center lead mt-3">
                                 Already have an account?
                                 <RouterLink :to="{ name: 'login' }">Login</RouterLink>
                             </p>
