@@ -82,7 +82,7 @@
       <!-- Modal -->
       <Teleport to="#modal" v-if="todoStore.showModal">
           <!-- <TodoModal :todo="todo" @select="handleSelect" @color="changeColorTag"/> -->
-          <TodoModal :todoProps="todoStore.todoDetail"/>
+          <TodoModal :todoProps="JSON.parse(JSON.stringify(todoStore.todoDetail))"/>
       </Teleport>
       <!-- CLEAR ALL -->
       <div class="row clear">

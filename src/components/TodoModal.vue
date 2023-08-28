@@ -10,7 +10,7 @@
                     </div>
                     <div class="modal-body p-3">
                     <div class="modal-input d-flex align-items-center mb-3">
-                        <input type="text" v-model="todo.msg_task" class="w-100 border-0 border-info py-2 ps-2 text-secondary">
+                        <input type="text" v-model="todo.msg_task" class="w-100 border-0 border-info py-2 ps-2 text-secondary lead">
                         <i v-if="showInputField" class="bi bi-pencil-square ms-3" @click="showInput($event, todo.id), showInputField = false"></i>
                     </div>
                     <div class="modal-desc mb-3">
@@ -79,22 +79,18 @@
                             <div class="col-12">
                                 <div class="shadow p-4 text-secondary text-start">
                                     <input type="text" placeholder="Enter tag" class="form-control border-0 outline-none mb-3 shadow p-3" v-model="currentTag" @keydown="enterTag($event)">
+                                    <div v-if="showColorField">
+                                        <Transition appear name="color">
+                                            <colorDropdown />
+                                        </Transition>
+                                    </div>
                                     <div class="pe-3">
-                                        <div class="form-check text-start d-flex align-items-baseline ps-2" v-for="tag in tags" :key="tag">
+                                        <div class="form-check text-start d-flex align-items-baseline ps-2" v-for="(tag, index) in todo.tags" :key="index">
                                             <label class="form-check-label d-flex align-items-center mb-0">
-                                                <div class="dropdown">
-                                                    <i class="bi bi-three-dots-vertical me-2" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"></i>
-                                                    <ul class="dropdown-menu border-0 shadow p-2">
-                                                        <li class="dropdown-item d-inline-flex align-items-center justify-content-center p-1" v-for="color in todoStore.colorList" :key="color">
-                                                            <input type="radio" :value="color" v-model="tag.color" class="position-absolute opacity-0">
-                                                            <i class="bi bi-circle-fill" :class="'text-' + color"></i>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                <i class="bi bi-tags-fill" :class="'text-' + tag.color"></i>
+                                                <i class="bi bi-tags-fill" :class="'text-' + tag.color" role="button" aria-expanded="false" @click="todoStore.changeColorTag(tag.color)"></i>
                                                 <span class="ms-2">{{ tag.title }}</span>
                                             </label>
-                                            <input type="checkbox" class="form-check-input ms-auto" :value="tag.title" v-model="todo.tags" @click="emit('select', [tag, todo.id])">
+                                            <input type="checkbox" class="form-check-input ms-auto" :value="tag.title" v-model="tag.title">
                                         </div>
                                     </div>
                                 </div>
@@ -113,6 +109,7 @@
 </template>
 
 <script setup lang="ts">
+import colorDropdown from './colorDropdown.vue';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { useTodoStore } from '../stores/todoStore';
@@ -129,14 +126,14 @@ const emit = defineEmits(['select', 'color']);
 // use pinia Store
 const todoStore = useTodoStore();
 const todo = ref<todoType>(props.todoProps);
-const modal = ref<any>(null)
+const modal = ref<any>(null);
 
 onMounted(() => {
     modal.value.classList.add('show');
-    modal.value.style.backgroundColor = '#000000bf';
+    modal.value.style.backgroundColor = '#000000d9';
 })
 
-const { currentTag, showDescField, showInputField, showPriorityField, showTagField } = storeToRefs(todoStore);
+const { currentTag, showDescField, showInputField, showPriorityField, showTagField, showColorField } = storeToRefs(todoStore);
 
 
 // /* declare methods */
@@ -172,5 +169,16 @@ tags.value.push({title: 'Work', color: todoStore.colorList[5]}); */
 .modal-enter-active,
 .modal-leave-active {
   transition: all 0.3s linear;
+}
+
+.color-enter-from,
+.color-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.color-enter-active,
+.color-leave-active {
+    transition: all 0.5s ease;
 }
 </style>

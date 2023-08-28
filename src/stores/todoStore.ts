@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, watchEffect, type Ref } from 'vue'
 import { db, colRef } from '../firestore/todoFireStore'
 import { type todoType, type priority, type docType } from '../types/todoTypes'
-import { addDoc, onSnapshot, deleteDoc, doc, updateDoc } from 'firebase/firestore'
+import { query, addDoc, onSnapshot, deleteDoc, doc, updateDoc, orderBy } from 'firebase/firestore'
 
 export const useTodoStore = defineStore('todo', () => {
   const colorList : string[] = ['color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'color7', 'color8', 'color9', 'color10', 'color11', 'color12', 'color13', 'color14', 'color15', 'color16', 'color17', 'color18', 'color19'];
@@ -34,6 +34,7 @@ export const useTodoStore = defineStore('todo', () => {
     showDescField.value = false;
     showPriorityField.value = false;
     showTagField.value = false;
+    showColorField.value = false;
     showModal.value = false;
   };
 
@@ -42,6 +43,7 @@ export const useTodoStore = defineStore('todo', () => {
     showDescField.value = false;
     showPriorityField.value = false;
     showTagField.value = false;
+    showColorField.value = false;
     showModal.value = false;
     const docRef = doc(db, 'todos', id);
     await updateDoc(docRef, {
@@ -69,10 +71,13 @@ export const useTodoStore = defineStore('todo', () => {
    const showDescField = ref<boolean>(false);
    const showPriorityField = ref<boolean>(false);
    const showTagField = ref<boolean>(false);
+   const showColorField = ref<boolean>(false);
    const todoDetail = ref<todoType>();
+   const colorTag = ref<string>();
 
   // Declare methods work with firestore
-  onSnapshot(colRef, (querySnapshot) => {
+  const q = query(colRef, orderBy('date'));
+  onSnapshot(q, (querySnapshot) => {
     const todoRef : todoType[] = [];
     querySnapshot.forEach((doc: docType) => {
       todoRef.push({...doc.data(), id: doc.id})
@@ -132,6 +137,11 @@ export const useTodoStore = defineStore('todo', () => {
     showModal.value = true;
   }
 
+  const changeColorTag = (data: string) => {
+    colorTag.value = data;
+    showColorField.value = !showColorField.value;
+  }
+
   const showdropdownMenu = (id) => {
     document.getElementById(`dropdownTags_${id}`).classList.add('show');
   };
@@ -160,7 +170,7 @@ export const useTodoStore = defineStore('todo', () => {
 
 
   return { colorList, currentToDo, todolist, deleteTodo, enterToDo, clickEnterToDo, total, success, pending, showModal, openModal
-          , currentTag, showInputField, showDescField, showPriorityField, showTagField, todoDetail, resetData, updateData
+          , currentTag, showInputField, showDescField, showPriorityField, showTagField, showColorField, todoDetail, colorTag, resetData, updateData, changeColorTag
           , isAuth, termAgree, name, pass, mail, userMail, userName, loginMsg, signUpMsg
   }
 })
