@@ -1,7 +1,7 @@
 
 export type priority = 'Low' | 'Medium' | 'High' | 'None' 
 
-export interface todo {
+export interface todoType {
     id: string,
     msg_task: string,
     priority: priority,

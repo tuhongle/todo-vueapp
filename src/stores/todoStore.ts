@@ -1,46 +1,9 @@
 import { defineStore } from 'pinia'
-<<<<<<< HEAD
-import { ref, type Ref } from 'vue'
-import { useRouter } from 'vue-router';
 
-export const useTodoStore = defineStore('todo', () => {
-    const colorList : string[] = ['color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'color7', 'color8', 'color9', 'color10', 'color11', 'color12', 'color13', 'color14', 'color15', 'color16', 'color17', 'color18', 'color19']
-    const longURL : Ref<string> = ref('');
-    const shortenURL : Ref<string> = ref('');
-    const token : string = import.meta.env.VITE_TOKEN_TLY;
-    const isShortening : Ref<boolean> = ref(false);
-    const home = ref<boolean>(false);
-
-    const Router = useRouter();
-    const isAuth : Ref<boolean> = ref(false);
-    const termAgree : Ref<boolean> = ref(true);
-    const mail = ref<string>('');
-    const pass = ref<string>('');
-    const name = ref<string>('');
-
-    const userMail = ref<string>("");
-    const userName = ref<string>("");
-
-    const loginMsg = ref<string>("");
-    const signUpMsg = ref<string>("");
-
-
-    const $reset = () => {
-        mail.value = '';
-        pass.value = '';
-        name.value = '';
-        loginMsg.value = '';
-        signUpMsg.value = '';
-    }
-
-    return { colorList, longURL, shortenURL, home, isShortening, $reset,
-            isAuth, termAgree, name, pass, mail, userMail, userName, loginMsg, signUpMsg
-    }
-=======
 import { computed, ref, watchEffect, type Ref } from 'vue'
 import { db, colRef } from '../firestore/todoFireStore'
-import { type todo, type priority, type docType } from '../types/todoTypes'
-import { addDoc, onSnapshot, type DocumentData, deleteDoc, doc } from 'firebase/firestore'
+import { type todoType, type priority, type docType } from '../types/todoTypes'
+import { addDoc, onSnapshot, deleteDoc, doc, updateDoc } from 'firebase/firestore'
 
 export const useTodoStore = defineStore('todo', () => {
   const colorList : string[] = ['color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'color7', 'color8', 'color9', 'color10', 'color11', 'color12', 'color13', 'color14', 'color15', 'color16', 'color17', 'color18', 'color19'];
@@ -66,23 +29,60 @@ export const useTodoStore = defineStore('todo', () => {
       signUpMsg.value = '';
   }
 
+  const resetData = () => {
+    showInputField.value = true;
+    showDescField.value = false;
+    showPriorityField.value = false;
+    showTagField.value = false;
+    showModal.value = false;
+  };
+
+  const updateData = async(data: todoType, id: string) => {
+    showInputField.value = true;
+    showDescField.value = false;
+    showPriorityField.value = false;
+    showTagField.value = false;
+    showModal.value = false;
+    const docRef = doc(db, 'todos', id);
+    await updateDoc(docRef, {
+      msg_task: data.msg_task,
+      priority: data.priority,
+      tags: data.tags,
+      desc: data.desc,
+      date: data.date,
+      isChecked: data.isChecked
+    });
+  };
+
+  // Declare variables of homeview
   const total = ref<number>();
   const success = ref<number>();
   const pending = ref<number>();
-  const currentDay = ref('');
   const currentToDo = ref('');
+  const showModal = ref<boolean>(false);
   const tags = ref([]);
-  const todos = ref<todo[]>([]);
+  const todos = ref<todoType[]>([]);
 
-  const todolist = computed<todo[]>(() => {
-    const todos : todo[] = [];
-    onSnapshot(colRef, (querySnapshot) => {
-      querySnapshot.forEach((doc: docType) => {
-        todos.push({ ...doc.data(), id: doc.id })
-      });
-    });
-    return todos;
-  })
+   // Declare variables of modal
+   const currentTag = ref<string>('');
+   const showInputField = ref<boolean>(true);
+   const showDescField = ref<boolean>(false);
+   const showPriorityField = ref<boolean>(false);
+   const showTagField = ref<boolean>(false);
+   const todoDetail = ref<todoType>();
+
+  // Declare methods work with firestore
+  onSnapshot(colRef, (querySnapshot) => {
+    const todoRef : todoType[] = [];
+    querySnapshot.forEach((doc: docType) => {
+      todoRef.push({...doc.data(), id: doc.id})
+    })
+    todos.value = todoRef;
+  });
+
+  const todolist = computed<todoType[]>(() => {
+    return JSON.parse(JSON.stringify(todos.value));
+  });
 
   const addTodo = async() => {
     await addDoc(colRef, {
@@ -108,7 +108,7 @@ export const useTodoStore = defineStore('todo', () => {
     });
   };  
 
-  watchEffect(()=> {
+  watchEffect(async()=> {
     total.value = todolist.value.length;
     updateSuccess();
     pending.value = total.value! - success.value!;
@@ -126,6 +126,11 @@ export const useTodoStore = defineStore('todo', () => {
     await addTodo();
     currentToDo.value = '';
   };
+
+  const openModal = (data: todoType) => {
+    todoDetail.value = data;
+    showModal.value = true;
+  }
 
   const showdropdownMenu = (id) => {
     document.getElementById(`dropdownTags_${id}`).classList.add('show');
@@ -153,8 +158,9 @@ export const useTodoStore = defineStore('todo', () => {
     };
   };
 
-  return { colorList, currentToDo, todolist, deleteTodo, enterToDo, clickEnterToDo, total, success, pending,
-          isAuth, termAgree, name, pass, mail, userMail, userName, loginMsg, signUpMsg
+
+  return { colorList, currentToDo, todolist, deleteTodo, enterToDo, clickEnterToDo, total, success, pending, showModal, openModal
+          , currentTag, showInputField, showDescField, showPriorityField, showTagField, todoDetail, resetData, updateData
+          , isAuth, termAgree, name, pass, mail, userMail, userName, loginMsg, signUpMsg
   }
->>>>>>> eb8653f7711421f871cb9b3f3ccf0fd7d55e5efb
 })

@@ -11,7 +11,7 @@ const todoStore = useTodoStore();
                 <div class="card shadow p-4 p-md-5 rounded-4 overflow-hidden">
                     <div class="greetings-wrapper d-flex justify-content-between align-items-center mb-4">
                         <div class="brand-logo d-flex align-items-center">
-                            <img src="/todo.png" alt="" class="img-fluid" width="100">
+                            <RouterLink :to="{name: 'home'}"><img src="/todo.png" alt="" class="img-fluid" width="100"></RouterLink>
                         </div>
                         <div class="greetings ms-3">
                             <p class="fs-4 fw-bold mb-1">New here?</p>
