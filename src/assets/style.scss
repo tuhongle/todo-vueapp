@@ -49,7 +49,28 @@ $theme-colors: map-merge($theme-colors, (
     'color18': $color-18,
     'color19': $color-19,
     ));
-    
+
+$colors: (
+    'color1': $color-1,
+    'color2': $color-2,
+    'color3': $color-3,
+    'color4': $color-4,
+    'color5': $color-5,
+    'color6': $color-6,
+    'color7': $color-7,
+    'color8': $color-8,
+    'color9': $color-9,
+    'color10': $color-10,
+    'color11': $color-11,
+    'color12': $color-12,
+    'color13': $color-13,
+    'color14': $color-14,
+    'color15': $color-15,
+    'color16': $color-16,
+    'color17': $color-17,
+    'color18': $color-18,
+    'color19': $color-19,
+);
     
 @import '../../node_modules/bootstrap/scss/bootstrap';
 @import '../../node_modules/bootstrap/scss/dropdown';
@@ -74,6 +95,15 @@ body {
         }
 
         .todo {
+            .authen {
+                a {
+                    &:hover {
+                        display: inline-block;
+                        transform: scale(1.2);
+                        color: $primary !important;
+                    }
+                }
+            }
             div.tasks {
                 .col-4 {
                     p {
@@ -153,6 +183,12 @@ body {
     }
     
     #todoModal {
+        input.msgTask {
+            &:focus {
+                outline: 2px solid #5e72e4 !important;
+            }
+        }
+
         i.bi.bi-exclamation {
             display: inline-block !important;
             width: 7px !important;
@@ -181,8 +217,10 @@ body {
                             width: 20px !important;
 
                             * {
+                                transition: all 0.3s linear;
                                 &:hover {
                                     cursor: pointer;
+                                    transform: scale(0.8)
                                 }
                             }
                         }

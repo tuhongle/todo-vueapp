@@ -4,11 +4,11 @@
       <div class="row mb-4">
         <div class="col d-flex align-items-center">
           <h1 class="fw-bold w-auto mb-0">TODO-LIST</h1>
-          <div class="col text-end">
+          <div v-if="!todoStore.isAuth" class="col text-end authen">
             <RouterLink :to="{name: 'login'}" class="me-3 text-decoration-none text-muted">Log In</RouterLink>
             <RouterLink :to="{name: 'signup'}" class="text-decoration-none text-muted">Sign Up</RouterLink>
           </div>
-          <div class="col avatar text-end">
+          <div v-else class="col avatar text-end">
             <img src="/avatar.jpg" alt="avatar" width="60" height="60" class="object-fit-cover rounded-circle">
           </div>
         </div>
@@ -30,8 +30,8 @@
         <i class="bi bi-arrow-right-short fs-1" @click="todoStore.clickEnterToDo"></i>
         <!-- ---- Exit new todo ---- -->
       </div>
-      <div class="row lists mb-3 py-3 border-bottom" v-for="todo in todoStore.todolist" :key="todo.id" :id="'todo_'+todo.id">
-        <div class="row list">
+      <div class="row lists mb-3 py-3 border-bottom" v-for="todo in todoStore.todolist" :key="todo.id">
+        <div class="row list" :class="{'opacity-50 text-decoration-line-through': todo.isChecked}">
           <div class="col-9" @click="todoStore.openModal(todo)">
             <div class="row text-start">
               <div class="col-12 col-md-8 d-flex align-items-center mb-3 mb-md-0">
@@ -48,15 +48,19 @@
                   <p class="ms-2 mb-0 text-secondary">None Priority</p>
                 </div>
                 <div class="dropdown ms-auto">
-                  <i class="bi bi-tag-fill fs-5 text-secondary"></i>
-                  <ul class="dropdown-menu" :id="'dropdownTags_' + todo.id">
-                    <li class="dropdown-item text-center text-secondary disabled">
-                      <i class="bi bi-tags-fill"></i>
-                      <span class="ms-2">Tags</span>
-                    </li>
-                    <li class="dropdown-item py-0"><hr class="my-1"></li>
-                    <li class="dropdown-item text-center dropdownTags" :id="tag+'_'+todo.id" v-for="tag in todo.tags" :key="tag">{{ tag }}</li>
-                  </ul>
+                  <!-- dropdown tag -->
+                  <i class="bi bi-tag-fill fs-5 text-secondary" @click.stop="todoStore.showDropdownTag(todo.id)"></i>
+                  <!-- ========= -->
+                  <Transition name="tag" v-show="todoStore.showTag">
+                    <ul class="dropdown-menu" :id="'dropdownTags_' + todo.id">
+                      <li class="dropdown-item text-center text-secondary disabled">
+                        <i class="bi bi-tags-fill"></i>
+                        <span class="ms-2">Tags</span>
+                      </li>
+                      <li class="dropdown-item py-0"><hr class="my-1"></li>
+                      <li class="dropdown-item text-center dropdownTags" v-for="tag in todo.tags" :key="tag">{{ tag }}</li>
+                    </ul>
+                  </Transition>
                 </div>
               </div>
             </div>
@@ -66,7 +70,7 @@
               <div class="col text-secondary">{{ todo.date }}</div>
               <div class="col d-flex align-items-center justify-content-end">
                 <!-- done todo -->
-                <input type="checkbox" class="form-check-input mt-0 border-info me-0 me-md-3" v-model="todo.isChecked" @click="doneToDo([todo.id, todo.isChecked])">
+                <input type="checkbox" class="form-check-input mt-0 border-info me-0 me-md-3" v-model="todo.isChecked" @click="todoStore.doneToDo(!todo.isChecked, todo.id)" />
                 <!-- ======= -->
                 <!-- delete todo -->
                 <button class="btn p-0" @click="todoStore.deleteTodo(todo.id)">
@@ -86,7 +90,7 @@
       </Teleport>
       <!-- CLEAR ALL -->
       <div class="row clear">
-        <button v-if="todoStore.todolist.length" class="w-auto btn bg-transparent text-info border-0 text-start d-flex align-items-center">
+        <button v-if="todoStore.todolist.length" class="w-auto btn bg-transparent text-info border-0 text-start d-flex align-items-center" @click="todoStore.clearAll">
           <span>Clear All</span>
           <i class="bi bi-trash fs-5 ms-3"></i>
         </button>
@@ -102,3 +106,16 @@ import TodoModal from '../components/TodoModal.vue';
 const todoStore = useTodoStore();
 
 </script>
+
+<style scoped>
+.tag-enter-from, 
+.tag-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.tag-enter-active,
+.tag-leave-active {
+  transition: all 0.3s linear;
+}
+</style>

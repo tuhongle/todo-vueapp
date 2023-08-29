@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 
-import { computed, ref, watchEffect, type Ref } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 import { db, colRef } from '../firestore/todoFireStore'
-import { type todoType, type priority, type docType } from '../types/todoTypes'
+import { type todoType, type docType } from '../types/todoTypes'
 import { query, addDoc, onSnapshot, deleteDoc, doc, updateDoc, orderBy } from 'firebase/firestore'
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged } from "firebase/auth"
 
 export const useTodoStore = defineStore('todo', () => {
   const colorList : string[] = ['color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'color7', 'color8', 'color9', 'color10', 'color11', 'color12', 'color13', 'color14', 'color15', 'color16', 'color17', 'color18', 'color19'];
@@ -62,8 +63,8 @@ export const useTodoStore = defineStore('todo', () => {
   const pending = ref<number>();
   const currentToDo = ref('');
   const showModal = ref<boolean>(false);
-  const tags = ref([]);
   const todos = ref<todoType[]>([]);
+  const showTag = ref<boolean>(false);
 
    // Declare variables of modal
    const currentTag = ref<string>('');
@@ -104,18 +105,15 @@ export const useTodoStore = defineStore('todo', () => {
     await deleteDoc(doc(db, 'todos', id))
   }
 
-  const updateSuccess = () => {
-    success.value = 0;
-    todolist.value.forEach((el) => {
-      if (el.isChecked) {
-        success.value! ++
-      }
-    });
-  };  
+  const clearAll = () => {
+    todolist.value.forEach(async(el) => {
+      await deleteDoc(doc(db, 'todos', el.id))
+    })
+  }
 
-  watchEffect(async()=> {
+  watch(todolist, () => {
     total.value = todolist.value.length;
-    updateSuccess();
+    success.value = todolist.value.filter(el => el.isChecked).length;
     pending.value = total.value! - success.value!;
   })
 
@@ -142,35 +140,38 @@ export const useTodoStore = defineStore('todo', () => {
     showColorField.value = !showColorField.value;
   }
 
-  const showdropdownMenu = (id) => {
-    document.getElementById(`dropdownTags_${id}`).classList.add('show');
-  };
-
-  const hidedropdownMenu = (id) => {
-    document.getElementById(`dropdownTags_${id}`).classList.remove('show');
-  };
-
-  const handleSelect = (info) => {
-    if (!todolist.value[info[1]-1].tags.includes(info[0].title)) {
-      todolist.value[info[1] - 1].tags.push(info[0].title);
-    };
-  };
-
+  const showDropdownTag = (id: string) => {
+    showTag.value = !showTag.value;
+    const tag = document.querySelector(`#dropdownTags_${id}`)!;
+    if (tag.classList.contains('show')) {
+      tag.classList.remove('show')
+    } else {
+      tag.classList.add('show')
+    }
+  }
   
 
-  const doneToDo = (info) => {
-    if (!info[1]) {
-      document.getElementById(`todo_${info[0]}`).style.opacity = '0.5';
-      document.getElementById(`title_${info[0]}`).style.textDecoration = 'line-through';
-    } else {
-      document.getElementById(`todo_${info[0]}`).style.opacity = '1';
-      document.getElementById(`title_${info[0]}`).style.textDecoration = 'none';
-    };
+  const doneToDo = async (data : boolean, id: string) => {
+    await updateDoc(doc(db, 'todos', id), {
+      isChecked: data
+    });
   };
 
+  // declare firestore auth functions
 
-  return { colorList, currentToDo, todolist, deleteTodo, enterToDo, clickEnterToDo, total, success, pending, showModal, openModal
+  const auth = getAuth();
+
+  const signUp = async() => {
+    if (termAgree.value) {
+      await createUserWithEmailAndPassword(auth, mail.value, pass.value);
+      $reset();
+    } else {
+      signUpMsg.value = 'Please agree our terms and conditions';
+    }
+  }
+
+  return { colorList, currentToDo, todolist, deleteTodo, enterToDo, clickEnterToDo, total, success, pending, showModal, showTag, openModal, doneToDo, clearAll, showDropdownTag
           , currentTag, showInputField, showDescField, showPriorityField, showTagField, showColorField, todoDetail, colorTag, resetData, updateData, changeColorTag
-          , isAuth, termAgree, name, pass, mail, userMail, userName, loginMsg, signUpMsg
+          , isAuth, termAgree, name, pass, mail, userMail, userName, loginMsg, signUpMsg, signUp
   }
 })
