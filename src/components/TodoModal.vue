@@ -126,7 +126,7 @@ const todo = ref<todoType>(props.todoProps);
 const modal = ref<any>(null);
 const msgTask = ref<any>(null);
 
-const { currentTag, showDescField, showInputField, showPriorityField, showTagField, showColorField, tags } = storeToRefs(todoStore);
+const { currentTag, showDescField, showInputField, showPriorityField, showTagField, showColorField } = storeToRefs(todoStore);
 
 onMounted(() => {
     modal.value.classList.add('show');

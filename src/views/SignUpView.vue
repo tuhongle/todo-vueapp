@@ -29,6 +29,9 @@ const todoStore = useTodoStore();
                             <div class="form-group mb-3">
                                 <input class="form-control shadow-none ps-4 py-3 rounded-0" type="text" placeholder="Username" v-model="todoStore.name">
                             </div>
+                            <div class="form-group mb-3">
+                                <input class="form-control shadow-none ps-4 py-3 rounded-0" type="text" placeholder="Avatar URL" v-model="todoStore.url">
+                            </div>
                             <div class="d-flex align-items-center justify-content-between my-3">
                                 <div class="ps-0">
                                     <label class="form-check-label text-muted">

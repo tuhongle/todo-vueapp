@@ -31,7 +31,7 @@ const todoStore = useTodoStore();
                             <div class="d-flex align-items-center justify-content-between my-4">
                                 <div class="me-2">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input">
+                                        <input type="checkbox" class="form-check-input" v-model="todoStore.keepSignIn">
                                         <span class="ms-2 text-muted">Keep me signed in</span>
                                     </label>
                                 </div>

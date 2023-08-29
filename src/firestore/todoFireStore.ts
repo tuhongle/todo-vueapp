@@ -1,8 +1,9 @@
 import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 import { collection, getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.API_KEY,
+  apiKey: import.meta.env.VITE_API_KEY,
   authDomain: "todo-app-3cc9b.firebaseapp.com",
   projectId: "todo-app-3cc9b",
   storageBucket: "todo-app-3cc9b.appspot.com",
@@ -13,3 +14,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app)
 export const colRef = collection(db, 'todos')
+export const auth = getAuth(app)

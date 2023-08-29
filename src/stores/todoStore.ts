@@ -1,22 +1,30 @@
 import { defineStore } from 'pinia'
 
 import { computed, ref, watch, type Ref } from 'vue'
-import { db, colRef } from '../firestore/todoFireStore'
-import { type todoType, type docType } from '../types/todoTypes'
+import { db, colRef, auth } from '../firestore/todoFireStore'
+import { type todoType } from '../types/todoTypes'
 import { query, addDoc, onSnapshot, deleteDoc, doc, updateDoc, orderBy } from 'firebase/firestore'
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged } from "firebase/auth"
+import { createUserWithEmailAndPassword, deleteUser, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth"
+import { useRouter } from 'vue-router'
 
 export const useTodoStore = defineStore('todo', () => {
   const colorList : string[] = ['color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'color7', 'color8', 'color9', 'color10', 'color11', 'color12', 'color13', 'color14', 'color15', 'color16', 'color17', 'color18', 'color19'];
 
+  const router = useRouter();
   const isAuth : Ref<boolean> = ref(false);
   const termAgree : Ref<boolean> = ref(true);
+  const keepSignIn : Ref<boolean> = ref(true);
+  const wantToDel = ref<boolean>(false);
+  const confirmDelete = ref<boolean>(false);
+
   const mail = ref<string>('');
   const pass = ref<string>('');
   const name = ref<string>('');
+  const url = ref<string>('');
 
   const userMail = ref<string>("");
   const userName = ref<string>("");
+  const userAvatar = ref<string>('');
 
   const loginMsg = ref<string>("");
   const signUpMsg = ref<string>("");
@@ -26,8 +34,11 @@ export const useTodoStore = defineStore('todo', () => {
       mail.value = '';
       pass.value = '';
       name.value = '';
+      url.value = '';
       loginMsg.value = '';
       signUpMsg.value = '';
+      wantToDel.value = false;
+      confirmDelete.value = false;
   }
 
   const resetData = () => {
@@ -80,7 +91,7 @@ export const useTodoStore = defineStore('todo', () => {
   const q = query(colRef, orderBy('date'));
   onSnapshot(q, (querySnapshot) => {
     const todoRef : todoType[] = [];
-    querySnapshot.forEach((doc: docType) => {
+    querySnapshot.forEach((doc: any) => {
       todoRef.push({...doc.data(), id: doc.id})
     })
     todos.value = todoRef;
@@ -141,13 +152,21 @@ export const useTodoStore = defineStore('todo', () => {
   }
 
   const showDropdownTag = (id: string) => {
-    showTag.value = !showTag.value;
+    if (showTag.value) {
+      showTag.value = false;
+    } else {
+      showTag.value = true;
+    };
     const tag = document.querySelector(`#dropdownTags_${id}`)!;
     if (tag.classList.contains('show')) {
       tag.classList.remove('show')
     } else {
       tag.classList.add('show')
     }
+    setTimeout(() => {
+      showTag.value = false;
+      tag.classList.remove('show');
+    }, 2000);
   }
   
 
@@ -159,19 +178,74 @@ export const useTodoStore = defineStore('todo', () => {
 
   // declare firestore auth functions
 
-  const auth = getAuth();
-
   const signUp = async() => {
-    if (termAgree.value) {
-      await createUserWithEmailAndPassword(auth, mail.value, pass.value);
-      $reset();
-    } else {
-      signUpMsg.value = 'Please agree our terms and conditions';
+    try {
+      if (termAgree.value) {
+        await createUserWithEmailAndPassword(auth, mail.value, pass.value);
+        await updateProfile(auth.currentUser!, {
+          displayName: name.value,
+          photoURL: url.value,
+        });
+        const user = auth.currentUser;
+        if (user) {
+          userMail.value = user.email!;
+          userName.value = user.displayName!;
+          userAvatar.value = user.photoURL!;
+        };
+        $reset();
+        router.push('/');
+      } else {
+        signUpMsg.value = 'Please agree our terms and conditions';
+      }
+    }
+    catch (err: any) {
+      if (err.message === 'Firebase: Error (auth/email-already-in-use).') {
+        signUpMsg.value = 'That mail is taken. Please try another.'
+      }
     }
   }
 
+  const logIn = async() => {
+    try {
+      await signInWithEmailAndPassword(auth, mail.value, pass.value);
+      $reset();
+      router.push('/');
+    }
+    catch (err: any) {
+      switch (err.code) {
+        case "auth/user-not-found":
+        loginMsg.value = "Couldn't find your account";
+        break;
+        case "auth/wrong-password":
+        loginMsg.value = 'Wrong password. Try again or click Forgot password to reset it.'
+        break;
+      }
+    }
+  }
+
+  const logOut = async() => {
+    await signOut(auth);
+  }
+
+  const deleteAcc = async() => {
+    await deleteUser(auth.currentUser!);
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      isAuth.value = true;
+      userMail.value = user.email!;
+      userName.value = user.displayName!;
+      userAvatar.value = user.photoURL!;
+    } else {
+      isAuth.value = false;
+      wantToDel.value = false;
+      confirmDelete.value = false;
+    }
+  })
+
   return { colorList, currentToDo, todolist, deleteTodo, enterToDo, clickEnterToDo, total, success, pending, showModal, showTag, openModal, doneToDo, clearAll, showDropdownTag
           , currentTag, showInputField, showDescField, showPriorityField, showTagField, showColorField, todoDetail, colorTag, resetData, updateData, changeColorTag
-          , isAuth, termAgree, name, pass, mail, userMail, userName, loginMsg, signUpMsg, signUp
+          , isAuth, termAgree, keepSignIn, name, pass, mail, url, userMail, userName, userAvatar, loginMsg, signUpMsg, wantToDel, confirmDelete, signUp, logIn, logOut, deleteAcc
   }
 })
