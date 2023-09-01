@@ -4,7 +4,7 @@ import { computed, ref, watch, type Ref } from 'vue'
 import { db, colRef, auth } from '../firestore/todoFireStore'
 import { type todoType } from '../types/todoTypes'
 import { query, addDoc, onSnapshot, deleteDoc, doc, updateDoc, orderBy } from 'firebase/firestore'
-import { createUserWithEmailAndPassword, deleteUser, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth"
+import { createUserWithEmailAndPassword, deleteUser, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth"
 import { useRouter } from 'vue-router'
 
 export const useTodoStore = defineStore('todo', () => {
@@ -28,6 +28,8 @@ export const useTodoStore = defineStore('todo', () => {
 
   const loginMsg = ref<string>("");
   const signUpMsg = ref<string>("");
+  const sendMailResetMsg = ref<string>('');
+  const sendEmailPass = ref<boolean>(true);
 
 
   const $reset = () => {
@@ -37,8 +39,10 @@ export const useTodoStore = defineStore('todo', () => {
       url.value = '';
       loginMsg.value = '';
       signUpMsg.value = '';
+      sendMailResetMsg.value = '';
       wantToDel.value = false;
       confirmDelete.value = false;
+      sendEmailPass.value = true;
   }
 
   const resetData = () => {
@@ -231,6 +235,18 @@ export const useTodoStore = defineStore('todo', () => {
     await deleteUser(auth.currentUser!);
   }
 
+  const sendMailResetPass = async() => {
+    try {
+      await sendPasswordResetEmail(auth, mail.value);
+      sendEmailPass.value = false;
+    }
+    catch (err : any) {
+      if (err.code === 'auth/user-not-found') {
+        sendMailResetMsg.value = "Email address is not valid";
+      }
+    }
+  }
+
   onAuthStateChanged(auth, (user) => {
     if (user) {
       isAuth.value = true;
@@ -247,5 +263,6 @@ export const useTodoStore = defineStore('todo', () => {
   return { colorList, currentToDo, todolist, deleteTodo, enterToDo, clickEnterToDo, total, success, pending, showModal, showTag, openModal, doneToDo, clearAll, showDropdownTag
           , currentTag, showInputField, showDescField, showPriorityField, showTagField, showColorField, todoDetail, colorTag, resetData, updateData, changeColorTag
           , isAuth, termAgree, keepSignIn, name, pass, mail, url, userMail, userName, userAvatar, loginMsg, signUpMsg, wantToDel, confirmDelete, signUp, logIn, logOut, deleteAcc
+          , sendMailResetMsg, sendEmailPass, sendMailResetPass
   }
 })

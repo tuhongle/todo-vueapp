@@ -35,7 +35,7 @@ const todoStore = useTodoStore();
                                         <span class="ms-2 text-muted">Keep me signed in</span>
                                     </label>
                                 </div>
-                                <a href="#" class="text-dark">Forgot password?</a>
+                                <RouterLink :to="{ name: 'forgotPassword' }" class="text-dark">Forgot password?</RouterLink>
                             </div>
                             <p class="text-center lead">
                                 Don't have an account?
